@@ -1,40 +1,18 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"os"
-	"strconv"
+
+	"exemple.com/bank/utils"
+
+	"github.com/Pallinder/go-randomdata"
 )
 
 const accountBalanceFile = "balance.txt"
 
-func writeBalanceToFile(balance float64) {
-	balanceText := fmt.Sprint(balance)
-	os.WriteFile(accountBalanceFile, []byte(balanceText), 0644)
-}
-
-func getBalanceFromFile() (float64, error) {
-	data, err := os.ReadFile(accountBalanceFile)
-
-	// Se não tiver erro err = nil
-	if err != nil {
-		return 1000, errors.New("Failed to find balance file")
-	}
-
-	balanceText := string(data)
-	balance, err := strconv.ParseFloat(balanceText, 64)
-
-	if err != nil {
-		return 1000, errors.New("Failed to parse stored balance value")
-	}
-
-	return balance, nil
-}
-
 func main() {
 
-	accountBalance, error := getBalanceFromFile()
+	accountBalance, error := utils.GetFloatFromFile(accountBalanceFile, 1000)
 
 	if error != nil {
 		// fmt.Println("ERROR")
@@ -46,14 +24,11 @@ func main() {
 	var depositMoney float64
 	var withdrawMoney float64
 	fmt.Println("Welcome to Go Bank!")
+	fmt.Println("Reach us 24/7", randomdata.PhoneNumber())
 
 	// for i := 0; i >= 0; i++ {
 	for {
-		fmt.Println("What do you want to do?")
-		fmt.Println("1. Check balance")
-		fmt.Println("2. Deposit money")
-		fmt.Println("3. Withdraw")
-		fmt.Println("4. Exit")
+		presentOptions()
 
 		var choice int
 		fmt.Print("Your choice: ")
@@ -73,7 +48,7 @@ func main() {
 
 			accountBalance += depositMoney
 			fmt.Println("Balance updated! New amount: ", accountBalance)
-			writeBalanceToFile(accountBalance)
+			utils.WriteFloatToFile(accountBalance, accountBalanceFile)
 		case 3:
 			fmt.Print("How much do you want to withdraw? ")
 			fmt.Scan(&withdrawMoney)
@@ -90,7 +65,7 @@ func main() {
 
 			accountBalance -= withdrawMoney
 			fmt.Println("Balance updated! New amount: ", accountBalance)
-			writeBalanceToFile(accountBalance)
+			utils.WriteFloatToFile(accountBalance, accountBalanceFile)
 		default:
 			fmt.Println("Goodbye!")
 			fmt.Println("Thanks for choosing our bank!")
