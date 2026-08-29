@@ -28,7 +28,7 @@ func New(title, content string) (Note, error) {
 	}, nil
 }
 
-func (n Note) DisplayNote() {
+func (n Note) Display() {
 	fmt.Printf("\nNote title: %s\nNote content: %s \n", n.Title, n.Content)
 }
 
@@ -44,7 +44,7 @@ func (n Note) Save() error {
 	fileName = strings.ToLower(fileName)
 	fileName += ".json"
 
-	finalName := "./files/" + fileName
+	finalName := "./note/files/" + fileName
 
 	err = os.WriteFile(finalName, json, 0644)
 
