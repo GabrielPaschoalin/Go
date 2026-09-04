@@ -57,11 +57,16 @@ func dynamicArray() {
 
 	prices := []float64{1.1, 2.2} // Omitir o tamanho
 
-	updatedPrices := append(prices, 3.3)
+	updatedPrices := append(prices, 3.3, 4.4, 5.5) // Posso adicionar quantos eu quiser
 
 	fmt.Println(updatedPrices, prices)
 
 	// Remover o primeiro elemento (Não tem uma função específica)
 	prices = prices[1:]
-	fmt.Print(prices)
+	fmt.Println(prices)
+
+	// Merge 2 arrays
+	discountPrices := []float64{10, 20}
+	prices = append(prices, discountPrices...)
+	fmt.Println(prices)
 }
