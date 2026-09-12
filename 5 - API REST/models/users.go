@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"gabriel/api/db"
 	"gabriel/api/utils"
 )
@@ -44,20 +45,26 @@ func (u *User) Save() error {
 	return err
 }
 
-func (u User) validateCredentials() error {
-
+func (u *User) ValidateCredentials() error {
 	query := `
-		SELECT password FROM users 
+		SELECT id, password FROM users 
 		WHERE email = ?
 	`
 
 	row := db.DB.QueryRow(query, u.Email)
 
 	var retrivedPassword string
-	err := row.Scan(&retrivedPassword)
+	err := row.Scan(&u.ID, &retrivedPassword)
 
 	if err != nil {
-		return err
+		return errors.New("Credentials invalid")
 	}
 
+	passwordIsValid := utils.CheckPasswordHash(u.Password, retrivedPassword)
+
+	if !passwordIsValid {
+		return errors.New("Credentials invalid")
+	}
+
+	return nil
 }
