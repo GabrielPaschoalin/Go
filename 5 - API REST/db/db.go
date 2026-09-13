@@ -8,22 +8,26 @@ import (
 
 var DB *sql.DB
 
+// InitDB abre a conexão com o banco SQLite, configura o pool de conexões e garante que as tabelas existam.
 func InitDB() {
 
 	var err error
 
+	// Abrir conexão com o arquivo do banco
 	DB, err = sql.Open("sqlite3", "api.db")
 
 	if err != nil {
 		panic("Could not connect to database.")
 	}
 
+	// Configurar limites do pool de conexões
 	DB.SetMaxOpenConns(10)
 	DB.SetMaxIdleConns(5)
 
 	createTables()
 }
 
+// createTables cria as tabelas do banco (users, events, registrations) caso ainda não existam.
 func createTables() {
 
 	// Criar tabela de usuários

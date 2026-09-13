@@ -7,7 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Authenticate é o middleware que valida o token JWT da requisição e libera o acesso às rotas protegidas.
 func Authenticate(context *gin.Context) {
+	// Ler o token enviado no header
 	token := context.Request.Header.Get("Authorization")
 
 	if token == "" {
@@ -15,6 +17,7 @@ func Authenticate(context *gin.Context) {
 		return
 	}
 
+	// Validar o token e extrair o ID do usuário
 	userID, err := utils.VerifyToken(token)
 
 	if err != nil {
@@ -22,6 +25,7 @@ func Authenticate(context *gin.Context) {
 		return
 	}
 
+	// Disponibilizar o ID do usuário para os próximos handlers
 	context.Set("userID", userID)
 	context.Next()
 }

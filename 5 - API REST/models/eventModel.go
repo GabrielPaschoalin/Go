@@ -16,6 +16,7 @@ type Event struct {
 
 var events []Event = []Event{}
 
+// Save insere um novo evento no banco, associado ao usuário informado em UserID.
 func (e *Event) Save() error {
 	query := `
 	INSERT INTO events 
@@ -45,6 +46,7 @@ func (e *Event) Save() error {
 	return err
 }
 
+// GetAllEvents retorna todos os eventos cadastrados no banco.
 func GetAllEvents() ([]Event, error) {
 	query := "SELECT * FROM events"
 
@@ -58,6 +60,7 @@ func GetAllEvents() ([]Event, error) {
 
 	var events []Event
 
+	// Converter cada linha retornada em um Event
 	for rows.Next() {
 		var event Event
 
@@ -73,9 +76,10 @@ func GetAllEvents() ([]Event, error) {
 	return events, nil
 }
 
+// GetEventByID busca um único evento pelo seu ID.
 func GetEventByID(id int64) (*Event, error) {
 	query := `
-		SELECT * 
+		SELECT *
 		FROM events
 		WHERE id = ?
 	`
@@ -92,12 +96,14 @@ func GetEventByID(id int64) (*Event, error) {
 	return &event, err
 }
 
+// Update sobrescreve os dados do evento (identificado por event.ID) no banco.
 func (event Event) Update() error {
 	query := `
 		UPDATE events
 		SET name = ?, description = ? , location = ?, dateTime = ?
 		WHERE id = ?
 	`
+	// Preparar a query
 	stmt, err := db.DB.Prepare(query)
 
 	if err != nil {
@@ -106,17 +112,20 @@ func (event Event) Update() error {
 
 	defer stmt.Close()
 
+	// Executar a query com os novos valores
 	_, err = stmt.Exec(event.Name, event.Description, event.Location, event.DateTime, event.ID)
 
 	return err
 }
 
+// DeleteEvent remove o evento (identificado por event.ID) do banco.
 func (event Event) DeleteEvent() error {
 	query := `
-		DELETE FROM events 
+		DELETE FROM events
 		where id = ?
 	`
 
+	// Preparar a query
 	stmt, err := db.DB.Prepare(query)
 
 	if err != nil {
@@ -125,14 +134,16 @@ func (event Event) DeleteEvent() error {
 
 	defer stmt.Close()
 
+	// Executar a query
 	_, err = stmt.Exec(event.ID)
 
 	return err
 }
 
+// Register cria uma inscrição do usuário informado no evento.
 func (e Event) Register(userId int64) error {
 
-	query := `INSERT INTO registrations 
+	query := `INSERT INTO registrations
 			(event_id, user_id)
 			VALUES
 			(?, ?)
@@ -150,6 +161,7 @@ func (e Event) Register(userId int64) error {
 	return err
 }
 
+// DeleteRegistration remove a inscrição do usuário informado no evento.
 func (e Event) DeleteRegistration(userId int64) error {
 
 	query := `DELETE FROM registrations

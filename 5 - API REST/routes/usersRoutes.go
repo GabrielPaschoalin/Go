@@ -8,8 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// signup lê os dados do corpo da requisição e cria um novo usuário.
 func signup(context *gin.Context) {
 
+	// Ler e validar o corpo da requisição
 	var user models.User
 
 	err := context.ShouldBindJSON(&user)
@@ -19,6 +21,7 @@ func signup(context *gin.Context) {
 		return
 	}
 
+	// Salvar o usuário no banco
 	err = user.Save()
 
 	if err != nil {
@@ -29,7 +32,9 @@ func signup(context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{"message": "User created successfully."})
 }
 
+// login valida as credenciais informadas e retorna um token JWT em caso de sucesso.
 func login(context *gin.Context) {
+	// Ler e validar o corpo da requisição
 	var user models.User
 
 	err := context.ShouldBindJSON(&user)
@@ -39,6 +44,7 @@ func login(context *gin.Context) {
 		return
 	}
 
+	// Verificar email e senha
 	err = user.ValidateCredentials()
 
 	if err != nil {
@@ -46,6 +52,7 @@ func login(context *gin.Context) {
 		return
 	}
 
+	// Gerar token de autenticação
 	token, err := utils.GenerateToken(user.Email, user.ID)
 
 	if err != nil {

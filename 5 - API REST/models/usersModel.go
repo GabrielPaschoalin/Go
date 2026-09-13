@@ -12,6 +12,7 @@ type User struct {
 	Password string `binding:"required"`
 }
 
+// Save insere um novo usuário no banco, com a senha já em hash.
 func (u *User) Save() error {
 	query := `
 		INSERT INTO users
@@ -20,6 +21,7 @@ func (u *User) Save() error {
 		(?, ?)
 	`
 
+	// Preparar a query
 	stmt, err := db.DB.Prepare(query)
 
 	if err != nil {
@@ -28,12 +30,14 @@ func (u *User) Save() error {
 
 	defer stmt.Close()
 
+	// Gerar hash da senha antes de salvar
 	hashedPassword, err := utils.HashPassword(u.Password)
 
 	if err != nil {
 		return err
 	}
 
+	// Executar a query e guardar o ID gerado
 	result, err := stmt.Exec(u.Email, hashedPassword)
 
 	if err != nil {
@@ -45,12 +49,14 @@ func (u *User) Save() error {
 	return err
 }
 
+// ValidateCredentials confere se o email existe e se a senha informada bate com o hash salvo.
 func (u *User) ValidateCredentials() error {
 	query := `
-		SELECT id, password FROM users 
+		SELECT id, password FROM users
 		WHERE email = ?
 	`
 
+	// Buscar usuário pelo email
 	row := db.DB.QueryRow(query, u.Email)
 
 	var retrivedPassword string
@@ -60,6 +66,7 @@ func (u *User) ValidateCredentials() error {
 		return errors.New("Credentials invalid")
 	}
 
+	// Comparar a senha informada com o hash salvo
 	passwordIsValid := utils.CheckPasswordHash(u.Password, retrivedPassword)
 
 	if !passwordIsValid {

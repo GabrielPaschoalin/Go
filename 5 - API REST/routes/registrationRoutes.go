@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// registerForEvent inscreve o usuário logado no evento indicado pelo ID na URL.
 func registerForEvent(context *gin.Context) {
 
 	// Obter o id indicado no requisição
@@ -39,6 +40,7 @@ func registerForEvent(context *gin.Context) {
 
 }
 
+// cancelRegistration remove a inscrição do usuário logado no evento indicado pelo ID na URL.
 func cancelRegistration(context *gin.Context) {
 
 	// Obter o id indicado no requisição

@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// getEvents responde com a lista de todos os eventos cadastrados.
 func getEvents(context *gin.Context) {
 	events, err := models.GetAllEvents()
 
@@ -20,8 +21,10 @@ func getEvents(context *gin.Context) {
 	context.JSON(http.StatusOK, events)
 }
 
+// createEvent lê o evento do corpo da requisição e salva no banco, associado ao usuário logado.
 func createEvent(context *gin.Context) {
 
+	// Ler e validar o corpo da requisição
 	var event models.Event
 	err := context.ShouldBindJSON(&event)
 
@@ -30,9 +33,11 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
+	// Associar o evento ao usuário autenticado
 	userID := context.GetInt64("userID")
 	event.UserID = userID
 
+	// Salvar no banco
 	err = event.Save()
 
 	if err != nil {
@@ -44,7 +49,9 @@ func createEvent(context *gin.Context) {
 
 }
 
+// getEvent responde com um único evento, identificado pelo ID na URL.
 func getEvent(context *gin.Context) {
+	// Obter o id indicado na requisição
 	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 
 	if err != nil {
@@ -52,6 +59,7 @@ func getEvent(context *gin.Context) {
 		return
 	}
 
+	// Buscar o evento no banco
 	event, err := models.GetEventByID(eventId)
 
 	if err != nil {
@@ -63,6 +71,7 @@ func getEvent(context *gin.Context) {
 
 }
 
+// updateEvent atualiza um evento existente, apenas se o usuário logado for o criador.
 func updateEvent(context *gin.Context) {
 
 	// Obter o id indicado no requisição
@@ -104,6 +113,7 @@ func updateEvent(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"message": "Event updated successfully."})
 }
 
+// deleteEvent remove um evento existente, apenas se o usuário logado for o criador.
 func deleteEvent(context *gin.Context) {
 
 	// Obter o id indicado no requisição
