@@ -129,3 +129,41 @@ func (event Event) DeleteEvent() error {
 
 	return err
 }
+
+func (e Event) Register(userId int64) error {
+
+	query := `INSERT INTO registrations 
+			(event_id, user_id)
+			VALUES
+			(?, ?)
+			`
+
+	// Preparar a query para ser usada em segui3da,
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	// Executar a query
+	_, err = stmt.Exec(e.ID, userId)
+
+	return err
+}
+
+func (e Event) DeleteRegistration(userId int64) error {
+
+	query := `DELETE FROM registrations
+		WHERE event_id = ? and user_id = ?`
+
+	// Preparar a query para ser usada em segui3da,
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	// Executar a query
+	_, err = stmt.Exec(e.ID, userId)
+
+	return err
+
+}
